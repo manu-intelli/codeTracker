@@ -4,6 +4,7 @@ import xlrd
 import openpyxl
 import pandas as pd
 
+# Update this with your folder path
 folder_path = "your_folder_path_here"
 output_file = "final_summary1.xlsx"
 
@@ -11,24 +12,25 @@ data = []
 
 # Define regex patterns (case-insensitive)
 patterns = {
-    "Part# / Model name": r"(part\s*#|model\s*name)",  # Matching part# and model name
-    "OPP#": r"opp\s*#?",  # Matching OPP#
+    "Part# / Model name": r"(part\s*#|model\s*name)",
+    "OPP#": r"opp\s*#?",
     "CUSTOMER": r"customer",
-    "Assembly cost / PPD": r"\b(assembly cost|ppd)\b",  # Matching assembly cost or PPD
-    "Estimated BOM cost": r"\b(estimated bom cost|bom cost per unit)\b",  # Matching BOM cost
-    "Design & Development cost": r"design and development cost",  # Matching design and development cost
-    "Recommended Price": r"recommended price",  # Matching recommended price
-    "Comments to Steven": r"(comments for steven\.s|comments to steven)",  # Matching comments for Steven
-    "CREATED ON": r"created\s*on\s*[:\-]?"  # Matching created on
+    "Assembly cost / PPD": r"\b(assembly cost|ppd)\b",
+    "Estimated BOM cost": r"\b(estimated bom cost|bom cost per unit)\b",
+    "Design & Development cost": r"design and development cost",
+    "Recommended Price": r"recommended price",
+    "Comments to Steven": r"(comments for steven\.s|comments to steven)",
+    "CREATED ON": r"created\s*on\s*[:\-]?"
 }
 
+# Force value as string for "CREATED ON"
 def clean_value(value, key):
     value = str(value).strip()
-    # For "CREATED ON", force it to be a string in Excel
     if key == "CREATED ON":
-        return "'" + value  # prevent Excel auto-conversion to serial
+        return "'" + value if not value.startswith("'") else value
     return value
 
+# XLS file reader
 def extract_from_xls(sheet):
     extracted = {}
     for row_idx in range(sheet.nrows):
@@ -44,6 +46,7 @@ def extract_from_xls(sheet):
                         continue
     return extracted
 
+# XLSX file reader
 def extract_from_xlsx(sheet):
     extracted = {}
     for row in sheet.iter_rows():
@@ -60,7 +63,7 @@ def extract_from_xlsx(sheet):
                             continue
     return extracted
 
-# Loop through each file in folder
+# Loop through all Excel files in folder
 for filename in os.listdir(folder_path):
     if filename.endswith(".xls") or filename.endswith(".xlsx"):
         file_path = os.path.join(folder_path, filename)
@@ -82,15 +85,15 @@ for filename in os.listdir(folder_path):
         except Exception as e:
             print(f"❌ Error reading {filename}: {e}")
 
-# Save to final Excel file
+# Save to final Excel file with all columns as text
 df = pd.DataFrame(data)
 
-# Optional: Force text format using xlsxwriter to avoid Excel formatting issues
 with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
     df.to_excel(writer, index=False, sheet_name='Summary')
     workbook = writer.book
     worksheet = writer.sheets['Summary']
-    text_format = workbook.add_format({'num_format': '@'})  # Text format
+
+    text_format = workbook.add_format({'num_format': '@'})  # text format
     for col_num in range(len(df.columns)):
         worksheet.set_column(col_num, col_num, 25, text_format)
 
