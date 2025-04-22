@@ -1,1 +1,5 @@
-this my correct code just under stand my Crtea on column there in my all excell shtere 6hat value consider as string ang get to update that value don't convert any servial vlaue s
+DB_NAME=URDB1_RIGHTDRAW
+DB_USER=sa
+DB_PASSWORD="Sqlserver2017"
+DB_HOST=172.17.71.4
+DB_PORT=1433
