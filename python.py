@@ -1,15 +1,16 @@
 import os
 import re
+import pandas as pd
 import xlrd
 import openpyxl
-import pandas as pd
-from openpyxl.utils.datetime import from_excel
 
-folder_path = "your_folder_path_here"  # Replace this
+# Folder containing the Excel files
+folder_path = "your_folder_path_here"  # Change this to your actual folder path
 output_file = "final_summary1.xlsx"
 
 data = []
 
+# Define regex patterns (case-insensitive)
 patterns = {
     "Part# / Model name": r"(part\s*#|model\s*name)",
     "OPP#": r"opp\s*#?",
@@ -30,13 +31,9 @@ def extract_from_xls(sheet):
             for key, pattern in patterns.items():
                 if re.search(pattern, cell_value, re.IGNORECASE):
                     try:
-                        next_cell = sheet.cell_value(row_idx, col_idx + 1)
+                        next_value = sheet.cell_value(row_idx, col_idx + 1)
                         if key not in extracted:
-                            # For .xls, dates come as float if date-formatted
-                            if isinstance(next_cell, float) and 'date' in key.lower():
-                                extracted[key] = xlrd.xldate.xldate_as_datetime(next_cell, sheet.book.datemode).strftime("%m/%d/%Y")
-                            else:
-                                extracted[key] = str(next_cell)
+                            extracted[key] = str(next_value)
                     except:
                         continue
     return extracted
@@ -50,19 +47,14 @@ def extract_from_xlsx(sheet):
                 for key, pattern in patterns.items():
                     if re.search(pattern, value, re.IGNORECASE):
                         try:
-                            next_cell = sheet.cell(cell.row, cell.column + 1)
-                            val = next_cell.value
-                            if key not in extracted:
-                                if isinstance(val, float) and "date" in next_cell.number_format.lower():
-                                    # Convert Excel serial to readable date
-                                    extracted[key] = from_excel(val).strftime("%m/%d/%Y")
-                                else:
-                                    extracted[key] = str(val)
+                            raw_display = sheet.cell(row=cell.row, column=cell.column + 1).value
+                            if raw_display is not None:
+                                extracted.setdefault(key, str(raw_display))
                         except:
                             continue
     return extracted
 
-# Process each Excel file
+# Loop through each file in folder
 for filename in os.listdir(folder_path):
     if filename.endswith(".xls") or filename.endswith(".xlsx"):
         file_path = os.path.join(folder_path, filename)
@@ -84,7 +76,7 @@ for filename in os.listdir(folder_path):
         except Exception as e:
             print(f"❌ Error reading {filename}: {e}")
 
-# Save to Excel
+# Save to final Excel file
 df = pd.DataFrame(data)
 df.to_excel(output_file, index=False)
 print(f"✅ Summary saved to {output_file}")
