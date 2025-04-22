@@ -1,6 +1,3 @@
-CREATED ON
-43664.0
-44238.0
-44372.0
-44238.0
- am getitng this value in filnalsummary file but actill values the in excel files like this 7/18/2019
+File Name	Part# / Model name	OPP#	CUSTOMER	Assembly cost / PPD	Estimated BOM cost	Design & Development cost	Comments to Steven	Recommended Price	CREATED ON
+4 ZVBP modeB-523_URJ PRICING INPUT_180719.xls	ZVBR5G-1+, ZV1+, ZVBP-G-1+ and ZVBP--1+	ATM		16.0	48.51	2000.0		NRE of $2700  PER MODEL and unit price of $500 each;	43664.0
+ABF-C-JONO-387_URJ PRICING INPUT_11022021.xls	ABF-1+	CF387	Mons	1.0	11.6	3500.0		Please see the comments above	44238.0
