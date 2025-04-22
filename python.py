@@ -3,13 +3,13 @@ import re
 import xlrd
 import openpyxl
 import pandas as pd
+from openpyxl.utils.datetime import from_excel
 
-folder_path = "your_folder_path_here"  # Replace this with the path to your Excel files
+folder_path = "your_folder_path_here"  # Replace this
 output_file = "final_summary1.xlsx"
 
 data = []
 
-# Define regex patterns (case-insensitive)
 patterns = {
     "Part# / Model name": r"(part\s*#|model\s*name)",
     "OPP#": r"opp\s*#?",
@@ -32,7 +32,11 @@ def extract_from_xls(sheet):
                     try:
                         next_cell = sheet.cell_value(row_idx, col_idx + 1)
                         if key not in extracted:
-                            extracted[key] = str(next_cell)
+                            # For .xls, dates come as float if date-formatted
+                            if isinstance(next_cell, float) and 'date' in key.lower():
+                                extracted[key] = xlrd.xldate.xldate_as_datetime(next_cell, sheet.book.datemode).strftime("%m/%d/%Y")
+                            else:
+                                extracted[key] = str(next_cell)
                     except:
                         continue
     return extracted
@@ -46,10 +50,14 @@ def extract_from_xlsx(sheet):
                 for key, pattern in patterns.items():
                     if re.search(pattern, value, re.IGNORECASE):
                         try:
-                            next_cell = sheet.cell(cell.row, cell.column + 1).value
-                            # Ensure original format is preserved by converting to string only
+                            next_cell = sheet.cell(cell.row, cell.column + 1)
+                            val = next_cell.value
                             if key not in extracted:
-                                extracted[key] = str(next_cell)
+                                if isinstance(val, float) and "date" in next_cell.number_format.lower():
+                                    # Convert Excel serial to readable date
+                                    extracted[key] = from_excel(val).strftime("%m/%d/%Y")
+                                else:
+                                    extracted[key] = str(val)
                         except:
                             continue
     return extracted
@@ -66,7 +74,7 @@ for filename in os.listdir(folder_path):
                 sheet = book.sheet_by_index(0)
                 extracted = extract_from_xls(sheet)
             else:
-                wb = openpyxl.load_workbook(file_path, data_only=False)  # Preserve formulas/format
+                wb = openpyxl.load_workbook(file_path, data_only=True)
                 sheet = wb.active
                 extracted = extract_from_xlsx(sheet)
 
