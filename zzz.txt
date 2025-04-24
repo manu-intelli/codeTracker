@@ -1,0 +1,25 @@
+
+Exception in thread django-main-thread:
+Traceback (most recent call last):
+  File "c:\program files\python311\Lib\threading.py", line 1038, in _bootstrap_inner
+    self.run()
+  File "c:\program files\python311\Lib\threading.py", line 975, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\utils\autoreload.py", line 64, in wrapper
+    fn(*args, **kwargs)
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\core\management\commands\runserver.py", line 133, in inner_run
+    self.check(display_num_errors=True)
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\core\management\base.py", line 563, in check
+    raise SystemCheckError(msg)
+django.core.management.base.SystemCheckError: ?[31;1mSystemCheckError: System check identified some issues:
+?[0m
+ERRORS:
+?[31;1m?: (corsheaders.E013) Origin '' in CORS_ALLOWED_ORIGINS is missing scheme or netloc
+        HINT: Add a scheme (e.g. https://) or netloc (e.g. example.com).?[0m
+
+WARNINGS:
+?[33;1mmasters.MstSectionGroupings.design_options: (fields.W340) null has no effect on ManyToManyField.?[0m
+?[33;1mmasters.MstSectionGroupings.rules: (fields.W340) null has no effect on ManyToManyField.?[0m
+?[33;1mmasters.MstVerifierField.sub_category: (fields.W340) null has no effect on ManyToManyField.?[0m
+
+System check identified 4 issues (0 silenced).
