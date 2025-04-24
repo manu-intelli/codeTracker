@@ -1,3 +1,81 @@
+System check identified 3 issues (0 silenced).
+Exception in thread django-main-thread:
+Traceback (most recent call last):
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 275, in ensure_connection
+    self.connect()
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\mssql\base.py", line 368, in get_new_connection
+    conn = Database.connect(connstr, **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pyodbc.InterfaceError: ('IM002', '[IM002] [Microsoft][ODBC Driver Manager] Data source name not found and no default driver specified (0) (SQLDriverConnect)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\program files\python311\Lib\threading.py", line 1038, in _bootstrap_inner
+    self.run()
+  File "c:\program files\python311\Lib\threading.py", line 975, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\utils\autoreload.py", line 64, in wrapper
+    fn(*args, **kwargs)
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\core\management\commands\runserver.py", line 136, in inner_run
+    self.check_migrations()
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\core\management\base.py", line 581, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\migrations\executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\migrations\loader.py", line 58, in __init__
+    self.build_graph()
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\migrations\loader.py", line 235, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\migrations\recorder.py", line 89, in applied_migrations
+    if self.has_table():
+       ^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\migrations\recorder.py", line 63, in has_table
+    with self.connection.cursor() as cursor:
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 316, in cursor
+    return self._cursor()
+           ^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\mssql\base.py", line 261, in _cursor
+    conn = super()._cursor()
+           ^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 292, in _cursor
+    self.ensure_connection()
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 274, in ensure_connection
+    with self.wrap_database_errors:
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 275, in ensure_connection
+    self.connect()
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\mssql\base.py", line 368, in get_new_connection
+    conn = Database.connect(connstr, **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.InterfaceError: ('IM002', '[IM002] [Microsoft][ODBC Driver Manager] Data source name not found and no default driver specified (0) (SQLDriverConne
+ct)')
+C:\New folder\PCB_Design\pcb_design\pcb_design\settings.py changed, reloading.
+Watching for file changes with StatReloader
+Performing system checks...
 
 Exception in thread django-main-thread:
 Traceback (most recent call last):
@@ -23,3 +101,90 @@ WARNINGS:
 ?[33;1mmasters.MstVerifierField.sub_category: (fields.W340) null has no effect on ManyToManyField.?[0m
 
 System check identified 4 issues (0 silenced).
+C:\New folder\PCB_Design\pcb_design\pcb_design\settings.py changed, reloading.
+Watching for file changes with StatReloader
+Performing system checks...
+
+System check identified some issues:
+
+WARNINGS:
+?[33;1mmasters.MstSectionGroupings.design_options: (fields.W340) null has no effect on ManyToManyField.?[0m
+?[33;1mmasters.MstSectionGroupings.rules: (fields.W340) null has no effect on ManyToManyField.?[0m
+?[33;1mmasters.MstVerifierField.sub_category: (fields.W340) null has no effect on ManyToManyField.?[0m
+
+System check identified 3 issues (0 silenced).
+Exception in thread django-main-thread:
+Traceback (most recent call last):
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 275, in ensure_connection
+    self.connect()
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\mssql\base.py", line 368, in get_new_connection
+    conn = Database.connect(connstr, **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pyodbc.InterfaceError: ('IM002', '[IM002] [Microsoft][ODBC Driver Manager] Data source name not found and no default driver specified (0) (SQLDriverConnect)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\program files\python311\Lib\threading.py", line 1038, in _bootstrap_inner
+    self.run()
+  File "c:\program files\python311\Lib\threading.py", line 975, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\utils\autoreload.py", line 64, in wrapper
+    fn(*args, **kwargs)
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\core\management\commands\runserver.py", line 136, in inner_run
+    self.check_migrations()
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\core\management\base.py", line 581, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\migrations\executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\migrations\loader.py", line 58, in __init__
+    self.build_graph()
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\migrations\loader.py", line 235, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\migrations\recorder.py", line 89, in applied_migrations
+    if self.has_table():
+       ^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\migrations\recorder.py", line 63, in has_table
+    with self.connection.cursor() as cursor:
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 316, in cursor
+    return self._cursor()
+           ^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\mssql\base.py", line 261, in _cursor
+    conn = super()._cursor()
+           ^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 292, in _cursor
+    self.ensure_connection()
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 274, in ensure_connection
+    with self.wrap_database_errors:
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 275, in ensure_connection
+    self.connect()
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\New folder\PCB_Design\pcb_design\venv\Lib\site-packages\mssql\base.py", line 368, in get_new_connection
+    conn = Database.connect(connstr, **args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.InterfaceError: ('IM002', '[IM002] [Microsoft][ODBC Driver Manager] Data source name not found and no default driver specified (0) (SQLDriverConne
+ct)')
+ q
