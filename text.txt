@@ -1,56 +1,19 @@
-
-HTTP Error 500.19 - Internal Server Error
-
-The requested page cannot be accessed because the related configuration data for the page is invalid.
-
-
-
-Detailed Error Information:
-
-
-
-Module
-   IIS Web Core 
-
-Notification
-   Unknown 
-
-Handler
-   Not yet determined 
-
-Error Code
-   0x80070005 
-
-Config Error
-   Cannot read configuration file due to insufficient permissions  
-
-Config File
-   \\?\C:\inetpub\wwwroot\PCB-Design\web.config 
-
-
-
-Requested URL
-   http://localhost:88/ 
-
-Physical Path
-    
-
-Logon Method
-   Not yet determined 
-
-Logon User
-   Not yet determined 
-
-
-
-
-Config Source:
-   -1: 
-    0: 
-
-
-
-
-More Information:
-This error occurs when there is a problem reading the configuration file for the Web server or Web application. In some cases, the event logs may contain more information about what caused this error. 
-View more information »
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <system.webServer>
+        <handlers>
+            <remove name="WebDAV" />
+            <remove name="ExtensionlessUrlHandler-Integrated-4.0" />
+            <add name="pcb-design_test" path="*" verb="*" modules="FastCgiModule" scriptProcessor="C:\inetpub\wwwroot\PCB-Design\pcb_design\venv\Scripts\python.exe|C:\inetpub\wwwroot\PCB-Design\pcb_design\venv\Lib\site-packages\wfastcgi.py" resourceType="Unspecified" />
+            <add name="ExtensionlessUrlHandler-Integrated-4.0" path="*." verb="*" type="System.Web.Handlers.TransferRequestHandler" resourceType="Unspecified" requireAccess="Script" preCondition="integratedMode,runtimeVersionv4.0" responseBufferLimit="0" />
+        </handlers>
+        <modules>
+            <remove name="WebDAVModule" />
+        </modules>
+    </system.webServer>
+    <appSettings>
+        <add key="PYTHONPATH" value="C:\inetpub\wwwroot\PCB-Design\pcb_design" />
+        <add key="WSGI_HANDLER" value="pcb_design.wsgi.application" />
+        <add key="DJANGO_SETTINGS_MODULE" value="pcb_design.settings" />
+    </appSettings>
+</configuration>
