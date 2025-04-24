@@ -1,10 +1,56 @@
-login/?next=/admin/	200	document	Other	2.4 kB	119 ms	
-base.css	404	stylesheet	login/?next=/admin/:5	0 B	17 ms	
-dark_mode.css	404	stylesheet	login/?next=/admin/:7	0 B	17 ms	
-nav_sidebar.css	404	stylesheet	login/?next=/admin/:11	0 B	17 ms	
-login.css	404	stylesheet	login/?next=/admin/:14	0 B	14 ms	
-responsive.css	404	stylesheet	login/?next=/admin/:21	0 B	18 ms	
-theme.js	404	script	login/?next=/admin/:8	324 B	14 ms	
-nav_sidebar.js	404	script	login/?next=/admin/:12	324 B	12 ms	
-prompt.js	200	script	playback.js:1	7.3 kB	10 ms	
-favicon.ico	404	text/html	Other	503 B	12 ms	
+
+HTTP Error 500.19 - Internal Server Error
+
+The requested page cannot be accessed because the related configuration data for the page is invalid.
+
+
+
+Detailed Error Information:
+
+
+
+Module
+   IIS Web Core 
+
+Notification
+   Unknown 
+
+Handler
+   Not yet determined 
+
+Error Code
+   0x80070005 
+
+Config Error
+   Cannot read configuration file due to insufficient permissions  
+
+Config File
+   \\?\C:\inetpub\wwwroot\PCB-Design\web.config 
+
+
+
+Requested URL
+   http://localhost:88/ 
+
+Physical Path
+    
+
+Logon Method
+   Not yet determined 
+
+Logon User
+   Not yet determined 
+
+
+
+
+Config Source:
+   -1: 
+    0: 
+
+
+
+
+More Information:
+This error occurs when there is a problem reading the configuration file for the Web server or Web application. In some cases, the event logs may contain more information about what caused this error. 
+View more information »
