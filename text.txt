@@ -1,5 +1,10 @@
-DB_NAME=URDB1_RIGHTDRAW
-DB_USER=sa
-DB_PASSWORD="Sqlserver2017"
-DB_HOST=172.17.71.4
-DB_PORT=1433
+login/?next=/admin/	200	document	Other	2.4 kB	119 ms	
+base.css	404	stylesheet	login/?next=/admin/:5	0 B	17 ms	
+dark_mode.css	404	stylesheet	login/?next=/admin/:7	0 B	17 ms	
+nav_sidebar.css	404	stylesheet	login/?next=/admin/:11	0 B	17 ms	
+login.css	404	stylesheet	login/?next=/admin/:14	0 B	14 ms	
+responsive.css	404	stylesheet	login/?next=/admin/:21	0 B	18 ms	
+theme.js	404	script	login/?next=/admin/:8	324 B	14 ms	
+nav_sidebar.js	404	script	login/?next=/admin/:12	324 B	12 ms	
+prompt.js	200	script	playback.js:1	7.3 kB	10 ms	
+favicon.ico	404	text/html	Other	503 B	12 ms	
