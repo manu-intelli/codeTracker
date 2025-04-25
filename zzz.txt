@@ -7,3 +7,27 @@ rver Books Online. (258)')
 (venv) PS C:\inetpub\wwwroot\PCB_DESIGN\pcb_design> pip list
 Fatal error in launcher: Unable to create process using '"C:\Data\Projects\Core\PCB_Design\pcb_design\venv\Scripts\python.exe"  "C:\inetpub\wwwroot\PCB_DESIGN\pcb_design\venv\Scripts\pip.exe" list': The system cannot fi
 nd the file specified.
+
+
+E325: ATTENTION
+Found a swap file by the name "/c/inetpub/wwwroot/PCB-Design-Prod/.git/.MERGE_MSG.swp"
+          owned by: INCHVMWEB0055+Webadmin   dated: Fri Apr 25 13:39:54 2025
+         file name: /c/inetpub/wwwroot/PCB-Design-Prod/.git/MERGE_MSG
+          modified: no
+         user name: INCHVMWEB0055+Webadmin   host name: INCHVMWEB0055
+        process ID: 522 (STILL RUNNING)
+While opening file "/c/inetpub/wwwroot/PCB-Design-Prod/.git/MERGE_MSG"
+             dated: Fri Apr 25 14:07:53 2025
+      NEWER than swap file!
+
+(1) Another program may be editing the same file.  If this is the case,
+    be careful not to end up with two different instances of the same
+    file when making changes.  Quit, or continue with caution.
+(2) An edit session for this file crashed.
+    If this is the case, use ":recover" or "vim -r /c/inetpub/wwwroot/PCB-Design-Prod/.git/MERGE_MSG"
+    to recover the changes (see ":help recovery").
+    If you did this already, delete the swap file "/c/inetpub/wwwroot/PCB-Design-Prod/.git/.MERGE_MSG.swp"
+    to avoid this message.
+
+Swap file "/c/inetpub/wwwroot/PCB-Design-Prod/.git/.MERGE_MSG.swp" already exists!
+[O]pen Read-Only, (E)dit anyway, (R)ecover, (Q)uit, (A)bort: 
