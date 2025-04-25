@@ -2,3 +2,8 @@ django.db.utils.OperationalError: ('08001', '[08001] [Microsoft][ODBC Driver 17 
 Login timeout expired (0); [08001] [Microsoft][ODBC Driver 17 for SQL Server]Invalid connection string attribute (0); [08001] [Microsoft][ODBC Driver 17 for SQL Server]A network-related or instance-specific error has oc
 curred while establishing a connection to SQL Server. Server is not found or not accessible. Check if instance name is correct and if SQL Server is configured to allow remote connections. For more information see SQL Se
 rver Books Online. (258)')
+
+
+(venv) PS C:\inetpub\wwwroot\PCB_DESIGN\pcb_design> pip list
+Fatal error in launcher: Unable to create process using '"C:\Data\Projects\Core\PCB_Design\pcb_design\venv\Scripts\python.exe"  "C:\inetpub\wwwroot\PCB_DESIGN\pcb_design\venv\Scripts\pip.exe" list': The system cannot fi
+nd the file specified.
