@@ -1,0 +1,674 @@
+{
+	"info": {
+		"_postman_id": "4fd7d317-2359-48fb-9e25-140a61a90dc6",
+		"name": "RightStoken",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19579483"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"Raju12@gmail.com\",\r\n  \"password\": \"@Z\",\r\n  \"password2\": \"@Z\",\r\n  \"full_name\": \"Raju123\",\r\n  \"role\":\"admin\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}auth/register/",
+							"host": [
+								"{{Base_Url}}auth"
+							],
+							"path": [
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LogIn",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"designer@gmail.com\",\r\n  \"password\": \"zxasqw123@Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}auth/login/",
+							"host": [
+								"{{Base_Url}}auth"
+							],
+							"path": [
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "r",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1OTI1MzY3LCJpYXQiOjE3NDU5MTYzNjcsImp0aSI6IjgzOTA5OWFhNmZmZjRlNGFhYzYzZWJkN2IyNTBkYjc3IiwidXNlcl9pZCI6MX0.w2XIcvAFlBNH0so5SYoiiLGUGEqUtQvdm-v-ib9TN7k\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}auth/logout/",
+							"host": [
+								"{{Base_Url}}auth"
+							],
+							"path": [
+								"logout",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Password Reset",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"testuser@example.com\",\r\n    \"password\": \"zxasqw123@Z\",\r\n    \"password2\": \"zxasqw123@Z\"\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}auth/forgot-password/",
+							"host": [
+								"{{Base_Url}}auth"
+							],
+							"path": [
+								"forgot-password",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin Control",
+			"item": [
+				{
+					"name": "getUsers",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1OTI3NjYyLCJpYXQiOjE3NDU5MTg2NjIsImp0aSI6IjEwNDhkNjI2NzMyODQyYmZhNjJmNjgxMTA5NTVkN2VjIiwidXNlcl9pZCI6MX0.Z1-f6LbbJxSL8x00ALnOEMS56gQ_ebqHKNCPHM8gPUQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}auth/users/",
+							"host": [
+								"{{Base_Url}}auth"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}/auth/users/3/",
+							"host": [
+								"{{Base_Url}}"
+							],
+							"path": [
+								"auth",
+								"users",
+								"3",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n    \"email\": \"testuser@example.com\",\r\n    \"full_name\": \"New Name\",\r\n    \"role\": \"Approver\"\r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}/auth/users/3/",
+							"host": [
+								"{{Base_Url}}"
+							],
+							"path": [
+								"auth",
+								"users",
+								"3",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Sathish\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}auth/api/post/",
+							"host": [
+								"{{Base_Url}}auth"
+							],
+							"path": [
+								"api",
+								"post",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PCB",
+			"item": [
+				{
+					"name": "Get PCB Specification",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}right-draw/pcb-specification/2/?is_designer=1",
+							"host": [
+								"{{Base_Url}}right-draw"
+							],
+							"path": [
+								"pcb-specification",
+								"2",
+								""
+							],
+							"query": [
+								{
+									"key": "is_designer",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "components",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}masters/components/",
+							"host": [
+								"{{Base_Url}}masters"
+							],
+							"path": [
+								"components",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getComponent",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}masters/components/1/",
+							"host": [
+								"{{Base_Url}}masters"
+							],
+							"path": [
+								"components",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getSubCategoriesTwo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}right-draw/sub-categories-two/120/",
+							"host": [
+								"{{Base_Url}}right-draw"
+							],
+							"path": [
+								"sub-categories-two",
+								"120",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getDesignOptions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}right-draw/design-options/111/",
+							"host": [
+								"{{Base_Url}}right-draw"
+							],
+							"path": [
+								"design-options",
+								"111",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CheckTemplate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}/right-draw/check-template/?oppNumber=ap30pcb&opuNumber=ap30pcb&eduNumber=ap30pcb&modelName=ap30pcb&partNumber=ap30pcb&revisionNumber=ap30pcb&component=1",
+							"host": [
+								"{{Base_Url}}"
+							],
+							"path": [
+								"right-draw",
+								"check-template",
+								""
+							],
+							"query": [
+								{
+									"key": "oppNumber",
+									"value": "ap30pcb"
+								},
+								{
+									"key": "opuNumber",
+									"value": "ap30pcb"
+								},
+								{
+									"key": "eduNumber",
+									"value": "ap30pcb"
+								},
+								{
+									"key": "modelName",
+									"value": "ap30pcb"
+								},
+								{
+									"key": "partNumber",
+									"value": "ap30pcb"
+								},
+								{
+									"key": "revisionNumber",
+									"value": "ap30pcb"
+								},
+								{
+									"key": "component",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "design-rules",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}right-draw/design-rules/?design_option_ids=8,9",
+							"host": [
+								"{{Base_Url}}right-draw"
+							],
+							"path": [
+								"design-rules",
+								""
+							],
+							"query": [
+								{
+									"key": "design_option_ids",
+									"value": "8,9"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cad-design-templates",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MDA2OTU4LCJpYXQiOjE3NDU5OTc5NTgsImp0aSI6ImNhMDFmYjdmY2Q2ODQxODliYmJiOTI2YWJiZjQ0NzQ0IiwidXNlcl9pZCI6NX0.2DqEDYQ5IxPf-sQ0q9RumbnZo_lrbRK7cBiHfXmgHto",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"oppNumber\": \"apr30pcb\",\r\n    \"opuNumber\": \"apr30pcb\",\r\n    \"eduNumber\": \"apr30pcb\",\r\n    \"modelName\": \"apr30pcb\",\r\n    \"partNumber\": \"apr30pcb\",\r\n    \"component\": \"1\",\r\n    \"revisionNumber\": \"apr30pcb\",\r\n    \"componentSpecifications\": {\r\n        \"1\": 111,\r\n        \"2\": 121,\r\n        \"3\": 9,\r\n        \"4\": 55,\r\n        \"5\": 64,\r\n        \"6\": 78,\r\n        \"7\": 104,\r\n        \"8\": 110,\r\n        \"9\": 130,\r\n        \"10\": 89\r\n    },\r\n    \"designOptions\": [\r\n        \"1\",\r\n        \"4\"\r\n    ],\r\n    \"secondarySubLevel\": {\r\n        \"121\": \"2\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}right-draw/cad-design-templates/",
+							"host": [
+								"{{Base_Url}}right-draw"
+							],
+							"path": [
+								"cad-design-templates",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCadDesignTemplate",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MDA2OTU4LCJpYXQiOjE3NDU5OTc5NTgsImp0aSI6ImNhMDFmYjdmY2Q2ODQxODliYmJiOTI2YWJiZjQ0NzQ0IiwidXNlcl9pZCI6NX0.2DqEDYQ5IxPf-sQ0q9RumbnZo_lrbRK7cBiHfXmgHto",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}right-draw/cad-design-templates/5/",
+							"host": [
+								"{{Base_Url}}right-draw"
+							],
+							"path": [
+								"cad-design-templates",
+								"5",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user-templates",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MDA2OTU4LCJpYXQiOjE3NDU5OTc5NTgsImp0aSI6ImNhMDFmYjdmY2Q2ODQxODliYmJiOTI2YWJiZjQ0NzQ0IiwidXNlcl9pZCI6NX0.2DqEDYQ5IxPf-sQ0q9RumbnZo_lrbRK7cBiHfXmgHto",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}right-draw/user-templates/",
+							"host": [
+								"{{Base_Url}}right-draw"
+							],
+							"path": [
+								"user-templates",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "verifier-fields",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MDA2OTU4LCJpYXQiOjE3NDU5OTc5NTgsImp0aSI6ImNhMDFmYjdmY2Q2ODQxODliYmJiOTI2YWJiZjQ0NzQ0IiwidXNlcl9pZCI6NX0.2DqEDYQ5IxPf-sQ0q9RumbnZo_lrbRK7cBiHfXmgHto",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base_Url}}right-draw/verifier-fields/?component_id=1&category_id=1&sub_category_id=111",
+							"host": [
+								"{{Base_Url}}right-draw"
+							],
+							"path": [
+								"verifier-fields",
+								""
+							],
+							"query": [
+								{
+									"key": "component_id",
+									"value": "1"
+								},
+								{
+									"key": "category_id",
+									"value": "1"
+								},
+								{
+									"key": "sub_category_id",
+									"value": "111"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "verifier-templates",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MDA2OTU4LCJpYXQiOjE3NDU5OTc5NTgsImp0aSI6ImNhMDFmYjdmY2Q2ODQxODliYmJiOTI2YWJiZjQ0NzQ0IiwidXNlcl9pZCI6NX0.2DqEDYQ5IxPf-sQ0q9RumbnZo_lrbRK7cBiHfXmgHto",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"oppNumber\": \"apr30pcb\",\r\n    \"opuNumber\": \"apr30pcb\",\r\n    \"eduNumber\": \"apr30pcb\",\r\n    \"modelName\": \"apr30pcb\",\r\n    \"partNumber\": \"apr30pcb\",\r\n    \"component\": \"1\",\r\n    \"revisionNumber\": \"apr30pcb\",\r\n    \"componentSpecifications\": {\r\n        \"1\": \"111\",\r\n        \"3\": \"1\",\r\n        \"4\": 0.01,\r\n        \"5\": \"64\",\r\n        \"6\": \"77\",\r\n        \"7\": \"95\",\r\n        \"8\": 0.4,\r\n        \"10\": \"86\"\r\n    },\r\n    \"verifierQueryData\": {\r\n        \"1\": 1,\r\n        \"2\": 1,\r\n        \"3\": 1,\r\n        \"4\": 1,\r\n        \"5\": 1,\r\n        \"6\": 1,\r\n        \"7\": 1,\r\n        \"8\": 1,\r\n        \"9\": 1,\r\n        \"10\": 1,\r\n        \"11\": 1,\r\n        \"12\": 1,\r\n        \"13\": 1,\r\n        \"14\": 1,\r\n        \"15\": 1,\r\n        \"16\": 1,\r\n        \"17\": 1,\r\n        \"18\": 1,\r\n        \"19\": 1,\r\n        \"20\": 1\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}right-draw/verifier-templates/",
+							"host": [
+								"{{Base_Url}}right-draw"
+							],
+							"path": [
+								"verifier-templates",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "verify-results",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MDA2OTU4LCJpYXQiOjE3NDU5OTc5NTgsImp0aSI6ImNhMDFmYjdmY2Q2ODQxODliYmJiOTI2YWJiZjQ0NzQ0IiwidXNlcl9pZCI6NX0.2DqEDYQ5IxPf-sQ0q9RumbnZo_lrbRK7cBiHfXmgHto",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"oppNumber\": \"apr30pcb\",\r\n    \"opuNumber\": \"apr30pcb\",\r\n    \"eduNumber\": \"apr30pcb\",\r\n    \"modelName\": \"apr30pcb\",\r\n    \"partNumber\": \"apr30pcb\",\r\n    \"component\": \"1\",\r\n    \"revisionNumber\": \"apr30pcb\",\r\n    \"componentSpecifications\": {\r\n        \"1\": \"111\",\r\n        \"3\": \"1\",\r\n        \"4\": 0.01,\r\n        \"5\": \"64\",\r\n        \"6\": \"77\",\r\n        \"7\": \"95\",\r\n        \"8\": 0.4,\r\n        \"10\": \"86\"\r\n    },\r\n    \"verifierQueryData\": {\r\n        \"1\": 1,\r\n        \"2\": 1,\r\n        \"3\": 1,\r\n        \"4\": 1,\r\n        \"5\": 1,\r\n        \"6\": 1,\r\n        \"7\": 1,\r\n        \"8\": 1,\r\n        \"9\": 1,\r\n        \"10\": 1,\r\n        \"11\": 1,\r\n        \"12\": 1,\r\n        \"13\": 1,\r\n        \"14\": 1,\r\n        \"15\": 1,\r\n        \"16\": 1,\r\n        \"17\": 1,\r\n        \"18\": 1,\r\n        \"19\": 1,\r\n        \"20\": 1\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base_Url}}right-draw/verify-results/",
+							"host": [
+								"{{Base_Url}}right-draw"
+							],
+							"path": [
+								"verify-results",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
