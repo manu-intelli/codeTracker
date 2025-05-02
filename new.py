@@ -6,11 +6,9 @@ from datetime import datetime
 from openpyxl.cell.cell import Cell
 import pandas as pd
 
-# MAIN folder path
 main_folder_path = r"D:\RIghtstroken\Pricing\PricingExtraction\Pricing_Sheets_24-Feb-25"
 output_file = "final_summary_all_folders.xlsx"
 
-# Regex patterns
 patterns = {
     "Part# / Model name": r"(part\s*#|model\s*name)",
     "OPP#": r"opp\s*#?",
@@ -23,7 +21,6 @@ patterns = {
     "CREATED ON": r"created\s*on\s*[:\-]?"
 }
 
-# Clean values (handle Excel serial date numbers)
 def clean_value(value, key, cell=None):
     if isinstance(cell, Cell) and cell.is_date:
         return cell.value.strftime("%m/%d/%Y")
@@ -35,7 +32,6 @@ def clean_value(value, key, cell=None):
             pass
     return str(value).strip()
 
-# Extract data from .xls files
 def extract_from_xls(sheet):
     extracted = {}
     for row_idx in range(sheet.nrows):
@@ -45,7 +41,6 @@ def extract_from_xls(sheet):
             for key, pattern in patterns.items():
                 if re.search(pattern, cell_value, re.IGNORECASE):
                     if key not in extracted:
-                        # Try right cell
                         try:
                             next_value = sheet.cell_value(row_idx, col_idx + 1)
                             cleaned = clean_value(next_value, key)
@@ -53,7 +48,6 @@ def extract_from_xls(sheet):
                                 extracted[key] = cleaned
                                 continue
                         except: pass
-                        # Try below cell
                         try:
                             next_value = sheet.cell_value(row_idx + 1, col_idx)
                             cleaned = clean_value(next_value, key)
@@ -62,7 +56,6 @@ def extract_from_xls(sheet):
                         except: pass
     return extracted
 
-# Extract data from .xlsx files
 def extract_from_xlsx(sheet):
     extracted = {}
     for row in sheet.iter_rows():
@@ -73,7 +66,6 @@ def extract_from_xlsx(sheet):
                 for key, pattern in patterns.items():
                     if re.search(pattern, value, re.IGNORECASE):
                         if key not in extracted:
-                            # Try right cell
                             try:
                                 next_cell = sheet.cell(cell.row, cell.column + 1)
                                 cleaned = clean_value(next_cell.value, key, next_cell)
@@ -81,7 +73,6 @@ def extract_from_xlsx(sheet):
                                     extracted[key] = cleaned
                                     continue
                             except: pass
-                            # Try below cell
                             try:
                                 next_cell = sheet.cell(cell.row + 1, cell.column)
                                 cleaned = clean_value(next_cell.value, key, next_cell)
@@ -90,7 +81,6 @@ def extract_from_xlsx(sheet):
                             except: pass
     return extracted
 
-# Write to Excel with one sheet per subfolder
 with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
     for subfolder in os.listdir(main_folder_path):
         subfolder_path = os.path.join(main_folder_path, subfolder)
@@ -114,13 +104,28 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                     except Exception as e:
                         print(f"❌ Error reading {filename} in {subfolder}: {e}")
             if data:
+                # Fill missing keys with blank values
+                all_keys = {"File Name"} | set(patterns.keys())
+                for row in data:
+                    for key in all_keys:
+                        if key not in row:
+                            row[key] = ""
+
                 df = pd.DataFrame(data)
-                sheet_name = subfolder[:31]  # Max 31 chars
+                sheet_name = subfolder[:31]
                 df.to_excel(writer, index=False, sheet_name=sheet_name)
-                worksheet = writer.sheets[sheet_name]
+
                 workbook = writer.book
-                text_format = workbook.add_format({'num_format': '@'})
-                for col_num in range(len(df.columns)):
-                    worksheet.set_column(col_num, col_num, 25, text_format)
+                worksheet = writer.sheets[sheet_name]
+
+                default_format = workbook.add_format({'num_format': '@'})
+                missing_format = workbook.add_format({'bg_color': '#FF0000', 'font_color': '#FFFFFF', 'num_format': '@'})
+
+                for col_num, key in enumerate(df.columns):
+                    worksheet.set_column(col_num, col_num, 25, default_format)
+                    for row_num in range(1, len(df) + 1):
+                        cell_value = df.iloc[row_num - 1][key]
+                        if cell_value == "":
+                            worksheet.write(row_num, col_num, "", missing_format)
 
 print(f"✅ All summaries saved to {output_file}")
