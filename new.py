@@ -6,11 +6,11 @@ from datetime import datetime
 from openpyxl.cell.cell import Cell
 import pandas as pd
 
-# MAIN folder path
+# Main folder path
 main_folder_path = r"D:\RIghtstroken\Pricing\PricingExtraction\Pricing_Sheets_24-Feb-25"
 output_file = "final_summary_all_folders.xlsx"
 
-# Regex patterns
+# Field patterns
 patterns = {
     "Part# / Model name": r"(part\s*#|model\s*name)",
     "OPP#": r"opp\s*#?",
@@ -23,7 +23,7 @@ patterns = {
     "CREATED ON": r"created\s*on\s*[:\-]?"
 }
 
-# Clean values (handle Excel serial date numbers and special formatting)
+# Clean extracted values
 def clean_value(value, key, cell=None):
     if isinstance(cell, Cell) and cell.is_date:
         return cell.value.strftime("%m/%d/%Y")
@@ -36,18 +36,14 @@ def clean_value(value, key, cell=None):
     if isinstance(value, str) and key == "CREATED ON":
         match = re.search(r"(\d{1,2})[-/\s](\w{3,})[-/\s](\d{2,4})", value, re.IGNORECASE)
         if match:
-            try:
-                date_obj = datetime.strptime(match.group(0), "%d-%b-%y")
-                return date_obj.strftime("%m/%d/%Y")
-            except:
+            for fmt in ["%d-%b-%y", "%d-%b-%Y"]:
                 try:
-                    date_obj = datetime.strptime(match.group(0), "%d-%b-%Y")
-                    return date_obj.strftime("%m/%d/%Y")
+                    return datetime.strptime(match.group(0), fmt).strftime("%m/%d/%Y")
                 except:
-                    pass
+                    continue
     return str(value).strip()
 
-# Read .xls
+# XLS extractor
 def extract_from_xls(sheet):
     extracted = {}
     for row_idx in range(sheet.nrows):
@@ -55,36 +51,44 @@ def extract_from_xls(sheet):
             cell_value = str(sheet.cell_value(row_idx, col_idx)).strip().lower()
             for key, pattern in patterns.items():
                 if re.search(pattern, cell_value, re.IGNORECASE):
-                    try:
+                    if key not in extracted:
                         next_value = ""
-                        if col_idx + 1 < sheet.ncols:
-                            next_value = sheet.cell_value(row_idx, col_idx + 1)
-                        if (not next_value or str(next_value).strip() == "") and row_idx + 1 < sheet.nrows:
-                            next_value = sheet.cell_value(row_idx + 1, col_idx)
-                        if key not in extracted:
-                            extracted[key] = clean_value(next_value, key)
-                    except:
-                        continue
+                        try:
+                            if col_idx + 1 < sheet.ncols:
+                                next_value = sheet.cell_value(row_idx, col_idx + 1)
+                            if (not next_value or str(next_value).strip() == "") and row_idx + 1 < sheet.nrows:
+                                next_value = sheet.cell_value(row_idx + 1, col_idx)
+                            if (not next_value or str(next_value).strip() == "") and row_idx + 1 < sheet.nrows and col_idx + 1 < sheet.ncols:
+                                next_value = sheet.cell_value(row_idx + 1, col_idx + 1)
+                        except:
+                            continue
+                        extracted[key] = clean_value(next_value, key)
     return extracted
 
-# Read .xlsx
+# XLSX extractor
 def extract_from_xlsx(sheet):
     extracted = {}
+    max_row = sheet.max_row
+    max_col = sheet.max_column
+
     for row in sheet.iter_rows():
         for cell in row:
             if cell.value:
                 value = str(cell.value).strip().lower()
                 for key, pattern in patterns.items():
                     if re.search(pattern, value, re.IGNORECASE):
-                        try:
-                            next_cell = sheet.cell(cell.row, cell.column + 1)
-                            cell_val = next_cell.value
-                            if (not cell_val or str(cell_val).strip() == "") and cell.row + 1 <= sheet.max_row:
-                                cell_val = sheet.cell(cell.row + 1, cell.column).value
-                            if key not in extracted:
-                                extracted[key] = clean_value(cell_val, key, next_cell)
-                        except:
-                            continue
+                        if key not in extracted:
+                            next_val = None
+                            try:
+                                if cell.column + 1 <= max_col:
+                                    next_val = sheet.cell(cell.row, cell.column + 1).value
+                                if (not next_val or str(next_val).strip() == "") and cell.row + 1 <= max_row:
+                                    next_val = sheet.cell(cell.row + 1, cell.column).value
+                                if (not next_val or str(next_val).strip() == "") and cell.row + 1 <= max_row and cell.column + 1 <= max_col:
+                                    next_val = sheet.cell(cell.row + 1, cell.column + 1).value
+                            except:
+                                continue
+                            extracted[key] = clean_value(next_val, key, cell)
     return extracted
 
 # Write to Excel with formatting
@@ -133,4 +137,4 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                         if pd.isna(cell_val) or str(cell_val).strip() == "":
                             worksheet.write(row_num + 1, col_num, "Blank", red_fill)
 
-print(f"✅ All summaries saved to {output_file}")
+print(f"✅ Final report generated: {output_file}")
