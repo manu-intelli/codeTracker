@@ -14,7 +14,7 @@ output_file = "final_summary_all_folders.xlsx"
 patterns = {
     "Part# / Model name": r"(part\s*#|model\s*name)",
     "OPP#": r"opp\s*#?",
-    "CUSTOMER": r"\bcustomer\b",
+    "CUSTOMER": r"customer",
     "Assembly cost / PPD": r"\b(assembly cost|ppd)\b",
     "Estimated BOM cost": r"\b(estimated bom cost|bom cost per unit)\b",
     "Design & Development cost": r"design and development cost",
@@ -23,7 +23,7 @@ patterns = {
     "CREATED ON": r"created\s*on\s*[:\-]?"
 }
 
-# Clean values (handle Excel serial date numbers)
+# Clean values
 def clean_value(value, key, cell=None):
     if isinstance(cell, Cell) and cell.is_date:
         return cell.value.strftime("%m/%d/%Y")
@@ -35,7 +35,19 @@ def clean_value(value, key, cell=None):
             pass
     return str(value).strip()
 
-# Read .xls
+# Extract date from text like "12-May-16"
+def extract_date_from_text(text):
+    try:
+        for fmt in ("%d-%b-%y", "%d-%b-%Y", "%d/%m/%Y", "%m/%d/%Y", "%Y-%m-%d"):
+            try:
+                return datetime.strptime(text.strip(), fmt).strftime("%m/%d/%Y")
+            except:
+                continue
+    except:
+        pass
+    return None
+
+# Extract from .xls
 def extract_from_xls(sheet):
     extracted = {}
     for row_idx in range(sheet.nrows):
@@ -43,15 +55,20 @@ def extract_from_xls(sheet):
             cell_value = str(sheet.cell_value(row_idx, col_idx)).strip().lower()
             for key, pattern in patterns.items():
                 if re.search(pattern, cell_value, re.IGNORECASE):
-                    try:
-                        next_value = sheet.cell_value(row_idx, col_idx + 1)
-                        if key not in extracted:
+                    if key not in extracted:
+                        if key == "CREATED ON":
+                            match = re.search(r'\b(\d{1,2}[-/][a-zA-Z]{3,9}[-/]\d{2,4})\b', cell_value)
+                            if match:
+                                extracted[key] = extract_date_from_text(match.group(1))
+                                continue
+                        try:
+                            next_value = sheet.cell_value(row_idx, col_idx + 1)
                             extracted[key] = clean_value(next_value, key)
-                    except:
-                        continue
+                        except:
+                            continue
     return extracted
 
-# Read .xlsx
+# Extract from .xlsx
 def extract_from_xlsx(sheet):
     extracted = {}
     for row in sheet.iter_rows():
@@ -60,15 +77,20 @@ def extract_from_xlsx(sheet):
                 value = str(cell.value).strip().lower()
                 for key, pattern in patterns.items():
                     if re.search(pattern, value, re.IGNORECASE):
-                        try:
-                            next_cell = sheet.cell(cell.row, cell.column + 1)
-                            if key not in extracted:
+                        if key not in extracted:
+                            if key == "CREATED ON":
+                                match = re.search(r'\b(\d{1,2}[-/][a-zA-Z]{3,9}[-/]\d{2,4})\b', value)
+                                if match:
+                                    extracted[key] = extract_date_from_text(match.group(1))
+                                    continue
+                            try:
+                                next_cell = sheet.cell(cell.row, cell.column + 1)
                                 extracted[key] = clean_value(next_cell.value, key, next_cell)
-                        except:
-                            continue
+                            except:
+                                continue
     return extracted
 
-# Write to Excel with one sheet per subfolder
+# Write to Excel
 with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
     for subfolder in os.listdir(main_folder_path):
         subfolder_path = os.path.join(main_folder_path, subfolder)
@@ -91,31 +113,29 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                         data.append(row_data)
                     except Exception as e:
                         print(f"❌ Error reading {filename} in {subfolder}: {e}")
-
             if data:
                 df = pd.DataFrame(data)
-                sheet_name = subfolder[:31]  # Max sheet name length is 31 characters
+                sheet_name = subfolder[:31]
+                df.fillna("Blank", inplace=True)
                 df.to_excel(writer, index=False, sheet_name=sheet_name)
-
                 workbook = writer.book
                 worksheet = writer.sheets[sheet_name]
 
-                # Default text format
-                default_format = workbook.add_format({'num_format': '@'})
+                # Text format
+                text_format = workbook.add_format({'num_format': '@'})
+                worksheet.set_column(0, len(df.columns) - 1, 25, text_format)
 
-                # Red background, white text format for missing data
-                missing_format = workbook.add_format({
+                # Highlight "Blank" cells in red with white text and border
+                red_format = workbook.add_format({
                     'bg_color': '#FF0000',
                     'font_color': '#FFFFFF',
-                    'num_format': '@'
+                    'border': 1
                 })
 
-                # Set column widths and apply conditional styling
-                for col_num, key in enumerate(df.columns):
-                    worksheet.set_column(col_num, col_num, 25, default_format)
-                    for row_num in range(1, len(df) + 1):
-                        cell_value = df.iloc[row_num - 1][key]
-                        if cell_value == "" or pd.isna(cell_value):
-                            worksheet.write(row_num, col_num, "Blank", missing_format)
+                for row_idx in range(1, len(df) + 1):
+                    for col_idx in range(len(df.columns)):
+                        cell_value = df.iloc[row_idx - 1, col_idx]
+                        if str(cell_value).strip().lower() == "blank":
+                            worksheet.write(row_idx, col_idx, "Blank", red_format)
 
 print(f"✅ All summaries saved to {output_file}")
