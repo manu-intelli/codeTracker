@@ -36,14 +36,14 @@ def clean_value(value, key, cell=None):
     if isinstance(value, str) and key == "CREATED ON":
         match = re.search(r"(\d{1,2})[-/\s](\w{3,})[-/\s](\d{2,4})", value, re.IGNORECASE)
         if match:
-            for fmt in ["%d-%b-%y", "%d-%b-%Y"]:
+            for fmt in ["%d-%b-%y", "%d-%b-%Y", "%d/%b/%y", "%d/%b/%Y"]:
                 try:
                     return datetime.strptime(match.group(0), fmt).strftime("%m/%d/%Y")
                 except:
                     continue
     return str(value).strip()
 
-# XLS extractor
+# Extractor for XLS
 def extract_from_xls(sheet):
     extracted = {}
     for row_idx in range(sheet.nrows):
@@ -65,12 +65,11 @@ def extract_from_xls(sheet):
                         extracted[key] = clean_value(next_value, key)
     return extracted
 
-# XLSX extractor
+# Extractor for XLSX
 def extract_from_xlsx(sheet):
     extracted = {}
     max_row = sheet.max_row
     max_col = sheet.max_column
-
     for row in sheet.iter_rows():
         for cell in row:
             if cell.value:
@@ -121,7 +120,8 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                 worksheet = writer.sheets[sheet_name]
                 workbook = writer.book
 
-                # Style for blank cells
+                # Styles
+                text_format = workbook.add_format({'num_format': '@'})
                 red_fill = workbook.add_format({
                     'bg_color': '#FF0000',
                     'font_color': '#FFFFFF',
@@ -129,12 +129,11 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                     'align': 'left'
                 })
 
-                text_format = workbook.add_format({'num_format': '@'})
-
+                # Apply formatting
                 for col_num, column in enumerate(df.columns):
                     worksheet.set_column(col_num, col_num, 25, text_format)
-                    for row_num, cell_val in enumerate(df[column]):
-                        if pd.isna(cell_val) or str(cell_val).strip() == "":
-                            worksheet.write(row_num + 1, col_num, "Blank", red_fill)
+                    for row_num, val in enumerate(df[column]):
+                        if pd.isna(val) or str(val).strip() == "":
+                            worksheet.write(row_num + 1, col_num, "", red_fill)
 
-print(f"✅ Final report generated: {output_file}")
+print(f"✅ All summaries saved to {output_file}")
