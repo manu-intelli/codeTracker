@@ -44,7 +44,7 @@ def clean_value(value, key, cell=None):
                     except:
                         continue
 
-    return str(value).strip()
+    return str(value).strip() if value is not None else ""
 
 # Extract from .xls files
 def extract_from_xls(sheet):
@@ -71,7 +71,7 @@ def extract_from_xls(sheet):
                     extracted[key] = clean_value(next_val, key)
     return extracted
 
-# Extract from .xlsx files
+# Updated extract_from_xlsx
 def extract_from_xlsx(sheet):
     extracted = {}
     max_row, max_col = sheet.max_row, sheet.max_column
@@ -83,36 +83,34 @@ def extract_from_xlsx(sheet):
                 for key, pattern in patterns.items():
                     if key not in extracted or not extracted[key]:
                         if re.search(pattern, cell_text, re.IGNORECASE):
-                            print(f"Found '{key}' match in cell: {cell_text}")
+                            print(f"🔍 Found '{key}' keyword in cell: '{cell_text}' at R{cell.row}, C{cell.column}")
+
                             cleaned = clean_value(cell.value, key, cell)
                             if cleaned and cleaned.lower() != cell_text:
                                 extracted[key] = cleaned
-                                continue
+                                break
 
-                            next_val = None
-                            try:
-                                if cell.column + 1 <= max_col:
-                                    next_val = sheet.cell(cell.row, cell.column + 1).value
-                            except:
-                                pass
-
-                            cleaned_next = clean_value(next_val, key, cell)
-                            if cleaned_next:
-                                extracted[key] = cleaned_next
-                            elif key == "CUSTOMER":
-                                # Fallback to 2nd cell right
-                                try:
-                                    further_next = sheet.cell(cell.row, cell.column + 2).value
-                                    cleaned_further = clean_value(further_next, key, cell)
-                                    if cleaned_further:
-                                        extracted[key] = cleaned_further
-                                        print(f"✅ Fallback CUSTOMER value found at 2nd cell right: {cleaned_further}")
-                                except:
-                                    pass
-
+                            # Search surrounding cells
+                            found = False
+                            for dr in [0, 1, -1]:
+                                for dc in [1, 0, -1, 2]:
+                                    try:
+                                        r, c = cell.row + dr, cell.column + dc
+                                        if r >= 1 and c >= 1 and r <= max_row and c <= max_col:
+                                            neighbor_val = sheet.cell(row=r, column=c).value
+                                            cleaned_neighbor = clean_value(neighbor_val, key)
+                                            if cleaned_neighbor and cleaned_neighbor.lower() != cell_text:
+                                                extracted[key] = cleaned_neighbor
+                                                found = True
+                                                print(f"✅ Extracted {key} → '{cleaned_neighbor}' from R{r}, C{c}")
+                                                break
+                                    except:
+                                        continue
+                                if found:
+                                    break
     return extracted
 
-# Write to final Excel
+# Main loop and writer
 with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
     for subfolder in os.listdir(main_folder_path):
         subfolder_path = os.path.join(main_folder_path, subfolder)
@@ -131,6 +129,7 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                             wb = openpyxl.load_workbook(file_path, data_only=True)
                             sheet = wb.active
                             extracted = extract_from_xlsx(sheet)
+
                         row_data.update(extracted)
                         data.append(row_data)
                     except Exception as e:
@@ -154,4 +153,4 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                     'format': format_blank
                 })
 
-print(f"✅ All summaries saved to {output_file}")
+print(f"\n✅ All summaries saved to {output_file}")
