@@ -23,21 +23,18 @@ patterns = {
     "CREATED ON": r"created\s*on\s*[:\-]?"
 }
 
-# Clean and extract value, support for in-cell and date formats
+# Clean and extract value
 def clean_value(value, key, cell=None):
     if isinstance(cell, Cell) and cell.is_date:
         return cell.value.strftime("%m/%d/%Y")
 
     if key == "CREATED ON":
-        # Try converting Excel float date
         if isinstance(value, float):
             try:
                 date_value = datetime(*xlrd.xldate_as_tuple(value, 0))
                 return date_value.strftime("%m/%d/%Y")
             except:
                 pass
-
-        # Try matching string pattern inside same cell
         if isinstance(value, str):
             match = re.search(r"(\d{1,2})[-/\s](\w{3,})[-/\s](\d{2,4})", value, re.IGNORECASE)
             if match:
@@ -49,7 +46,7 @@ def clean_value(value, key, cell=None):
 
     return str(value).strip()
 
-# Extract from XLS
+# Extract from .xls files
 def extract_from_xls(sheet):
     extracted = {}
     for row_idx in range(sheet.nrows):
@@ -57,13 +54,11 @@ def extract_from_xls(sheet):
             cell_text = str(sheet.cell_value(row_idx, col_idx)).strip().lower()
             for key, pattern in patterns.items():
                 if key not in extracted and re.search(pattern, cell_text, re.IGNORECASE):
-                    # Try in same cell
                     cleaned = clean_value(sheet.cell_value(row_idx, col_idx), key)
                     if cleaned and cleaned.lower() != cell_text:
                         extracted[key] = cleaned
                         continue
 
-                    # Try next cell
                     next_val = ""
                     try:
                         if col_idx + 1 < sheet.ncols:
@@ -76,7 +71,7 @@ def extract_from_xls(sheet):
                     extracted[key] = clean_value(next_val, key)
     return extracted
 
-# Extract from XLSX
+# Extract from .xlsx files
 def extract_from_xlsx(sheet):
     extracted = {}
     max_row, max_col = sheet.max_row, sheet.max_column
@@ -86,44 +81,38 @@ def extract_from_xlsx(sheet):
             if cell.value:
                 cell_text = str(cell.value).strip().lower()
                 for key, pattern in patterns.items():
-                    if key not in extracted or not extracted[key]:  # Only if key is missing or empty
+                    if key not in extracted or not extracted[key]:
                         if re.search(pattern, cell_text, re.IGNORECASE):
-                            # Debugging print to trace matches
                             print(f"Found '{key}' match in cell: {cell_text}")
-
-                            # First check value in same cell
                             cleaned = clean_value(cell.value, key, cell)
                             if cleaned and cleaned.lower() != cell_text:
                                 extracted[key] = cleaned
                                 continue
 
-                            # Try next cells
                             next_val = None
                             try:
                                 if cell.column + 1 <= max_col:
                                     next_val = sheet.cell(cell.row, cell.column + 1).value
-                                elif cell.row + 1 <= max_row:
-                                    next_val = sheet.cell(cell.row + 1, cell.column).value
                             except:
                                 pass
-                            extracted[key] = clean_value(next_val, key, cell)
 
-    # Ensure CUSTOMER field is handled properly
-    if 'CUSTOMER' not in extracted:
-        print("CUSTOMER field not found, checking again...")
-        for row_idx in range(sheet.nrows):
-            for col_idx in range(sheet.ncols):
-                cell_text = str(sheet.cell_value(row_idx, col_idx)).strip().lower()
-                if re.search(r"(customer|client)", cell_text, re.IGNORECASE):
-                    customer_data = clean_value(sheet.cell_value(row_idx, col_idx), "CUSTOMER")
-                    if customer_data:
-                        extracted['CUSTOMER'] = customer_data
-                        print(f"Found CUSTOMER: {customer_data}")
-                        break
+                            cleaned_next = clean_value(next_val, key, cell)
+                            if cleaned_next:
+                                extracted[key] = cleaned_next
+                            elif key == "CUSTOMER":
+                                # Fallback to 2nd cell right
+                                try:
+                                    further_next = sheet.cell(cell.row, cell.column + 2).value
+                                    cleaned_further = clean_value(further_next, key, cell)
+                                    if cleaned_further:
+                                        extracted[key] = cleaned_further
+                                        print(f"✅ Fallback CUSTOMER value found at 2nd cell right: {cleaned_further}")
+                                except:
+                                    pass
+
     return extracted
 
-
-# Write to final Excel without formatting
+# Write to final Excel
 with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
     for subfolder in os.listdir(main_folder_path):
         subfolder_path = os.path.join(main_folder_path, subfolder)
@@ -152,19 +141,17 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                 sheet_name = subfolder[:31]
                 df.to_excel(writer, index=False, sheet_name=sheet_name)
                 worksheet = writer.sheets[sheet_name]
-                workbook = writer.book  # needed for formatting
+                workbook = writer.book
 
                 # Set column width
                 for col_num in range(len(df.columns)):
                     worksheet.set_column(col_num, col_num, 25)
 
-                # ✅ Apply conditional formatting: highlight empty cells
-                # This will highlight any blank cell with light red, but remove the color automatically if user fills it
+                # Highlight blank cells
                 format_blank = workbook.add_format({'bg_color': '#FFC7CE'})
                 worksheet.conditional_format(1, 0, len(df), len(df.columns) - 1, {
                     'type': 'blanks',
                     'format': format_blank
                 })
-
 
 print(f"✅ All summaries saved to {output_file}")
