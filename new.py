@@ -134,7 +134,19 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                 sheet_name = subfolder[:31]
                 df.to_excel(writer, index=False, sheet_name=sheet_name)
                 worksheet = writer.sheets[sheet_name]
+                workbook = writer.book  # needed for formatting
+
+                # Set column width
                 for col_num in range(len(df.columns)):
                     worksheet.set_column(col_num, col_num, 25)
+
+                # ✅ Apply conditional formatting: highlight empty cells
+                # This will highlight any blank cell with light red, but remove the color automatically if user fills it
+                format_blank = workbook.add_format({'bg_color': '#FFC7CE'})
+                worksheet.conditional_format(1, 0, len(df), len(df.columns) - 1, {
+                    'type': 'blanks',
+                    'format': format_blank
+                })
+
 
 print(f"✅ All summaries saved to {output_file}")
