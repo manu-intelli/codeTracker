@@ -1,0 +1,55 @@
+URJITA PRICING INPUT SHEET					
+					
+PART#	BPF--W4000-1+				
+OPP#	AICOX-RR--002				
+AP# 	-				
+CUSTOMER	INDIRA SISTEMAS				
+BOM rev	0.00				
+POTENTIAL AS IN OPP	500				
+TARGET PRICE AS IN OPP	$47 				
+ESTIMATED LIFE TIME	5 YRS				
+					
+DESIGN FEATURES :					
+This is a microstrip BPF with Fc at 4000 MHz.					
+Customer wanted a reduced height which we were able to meet.					
+There was trade-off in specs in order to meet their package.					
+					
+PRICING TABLE:					
+FACTORS	COST  ($)	"ACTUAL/
+GUESTIMATE/
+SIMILAR TO"	"ACCURATE/
+SIMILARITY/
+HIGH-LOW MARGIN?"	COMMENTS	
+PPD per unit		Guestimate. 	NA	"PPD is similar to ZNFLP-2100-S+ but this model does not have case, connector & cover assembly. Include matel CAN soldering process. Tuning of copper tab is required. Estimated tuning time is 3 to 4 mins"	
+YIELD LOSS	-	-	-	We are not expecting any yield loss	
+BOM per unit with final PCB	$1.05 	-	Accurate		
+BOM per unit with LPKF PCB	$13.91 			The BOM cost is estimated for an initial order qty of 20 pcs . See NOTE-1	
+TOOLING COST					
+Etching Artwork for CAN	$30 	-	-	-	
+Stamped CAN	-				
+PCB 	$920 				
+Stencil for P&P 	$100 	-	-	-	
+Test fixture	$250 	-	-	-	
+Copper tab setup cost	$100 	-	-	-	
+Carrier tape 	-				
+NRE	To be decided by Steven				
+Sample cost	To be decided by Steven				
+					
+TOTAL COST					
+MCL material per unit ( $)	MCL tooling cost ($)	Urjita Material per unit ($)	Urjita tooling cost ($)	PPD ($)	
+					
+REVIEW ON MATERIALS:					
+New PCB and CAN are required.					
+					
+COMMENTS:	Customer is asking for commerical proposal for this model.				
+					
+NOTE-1: 					
+Prototype and initial orders are assembled with LPKF PCB. 					
+The cost of the same will be recovered under Urjita cost for the initial order only. 					
+"For subsequent orders, final PCB will be ordered.LPKF PCB cost is NOT added in tooling cost."					
+					
+RECOMMENDED PRICE:					
+ENCLOSED DOCUMENTS:	1. BOM cost				
+					
+CREATED ON : 12-May-16					
+Rev: 1.00					
