@@ -14,7 +14,7 @@ output_file = "final_summary_all_folders.xlsx"
 patterns = {
     "Part# / Model name": r"(part\s*#|model\s*name)",
     "OPP#": r"opp\s*#?",
-    "CUSTOMER": r"\bcustomer\b|\bcustomer\s*name\b|\bclient\s*name\b",
+    "CUSTOMER": r"(customer|client)(\s*name)?",
     "Assembly cost / PPD": r"\b(assembly cost|ppd)\b",
     "Estimated BOM cost": r"\b(estimated bom cost|bom cost per unit)\b",
     "Design & Development cost": r"design and development cost",
@@ -43,7 +43,6 @@ def clean_value(value, key, cell=None):
                         return datetime.strptime(match.group(0), fmt).strftime("%m/%d/%Y")
                     except:
                         continue
-
     return str(value).strip()
 
 # Extract from .xls files
@@ -71,7 +70,7 @@ def extract_from_xls(sheet):
                     extracted[key] = clean_value(next_val, key)
     return extracted
 
-# Extract from .xlsx files (updated)
+# Extract from .xlsx files
 def extract_from_xlsx(sheet):
     extracted = {}
     max_row, max_col = sheet.max_row, sheet.max_column
@@ -83,41 +82,33 @@ def extract_from_xlsx(sheet):
                 for key, pattern in patterns.items():
                     if key not in extracted or not extracted[key]:
                         if re.search(pattern, cell_text, re.IGNORECASE):
-                            print(f"🔍 Found '{key}' keyword in cell: '{cell_text}' at R{cell.row}, C{cell.column}")
-
+                            print(f"🔍 Found '{key}' in cell: {cell_text}")
                             cleaned = clean_value(cell.value, key, cell)
                             if cleaned and cleaned.lower() != cell_text:
                                 extracted[key] = cleaned
-                                break
+                                continue
 
-                            # If text like "Customer: ABC Corp"
-                            if ":" in cell_text:
-                                parts = re.split(r"[:\-]", cell_text)
-                                if len(parts) > 1:
-                                    inline_value = parts[1].strip().title()
-                                    extracted[key] = inline_value
-                                    print(f"📌 Extracted inline value for {key}: {inline_value}")
-                                    break
+                            next_val = None
+                            try:
+                                if cell.column + 1 <= max_col:
+                                    next_val = sheet.cell(cell.row, cell.column + 1).value
+                            except:
+                                pass
 
-                            # Fallback: Look around
-                            found = False
-                            for dr in [0, 1, -1]:
-                                for dc in [1, 0, -1, 2]:
-                                    try:
-                                        r, c = cell.row + dr, cell.column + dc
-                                        if r >= 1 and c >= 1 and r <= max_row and c <= max_col:
-                                            neighbor_val = sheet.cell(row=r, column=c).value
-                                            cleaned_neighbor = clean_value(neighbor_val, key)
-                                            if cleaned_neighbor and cleaned_neighbor.lower() != cell_text:
-                                                extracted[key] = cleaned_neighbor
-                                                found = True
-                                                print(f"✅ Extracted {key} → '{cleaned_neighbor}' from R{r}, C{c}")
-                                                break
-                                    except:
-                                        continue
-                                if found:
-                                    break
-
+                            cleaned_next = clean_value(next_val, key, cell)
+                            if cleaned_next:
+                                extracted[key] = cleaned_next
+                                if key == "CUSTOMER":
+                                    print(f"✅ CUSTOMER value (next cell): {cleaned_next}")
+                            elif key == "CUSTOMER":
+                                try:
+                                    further_next = sheet.cell(cell.row, cell.column + 2).value
+                                    cleaned_further = clean_value(further_next, key, cell)
+                                    if cleaned_further:
+                                        extracted[key] = cleaned_further
+                                        print(f"✅ CUSTOMER value (2nd next cell): {cleaned_further}")
+                                except:
+                                    pass
     return extracted
 
 # Write to final Excel
@@ -126,11 +117,13 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
         subfolder_path = os.path.join(main_folder_path, subfolder)
         if os.path.isdir(subfolder_path):
             data = []
+            print(f"\n📁 Processing folder: {subfolder}")
             for filename in os.listdir(subfolder_path):
                 if filename.endswith((".xls", ".xlsx")):
                     file_path = os.path.join(subfolder_path, filename)
                     row_data = {"File Name": filename}
                     try:
+                        print(f"📄 Reading file: {filename}")
                         if filename.endswith(".xls"):
                             book = xlrd.open_workbook(file_path)
                             sheet = book.sheet_by_index(0)
@@ -139,8 +132,15 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                             wb = openpyxl.load_workbook(file_path, data_only=True)
                             sheet = wb.active
                             extracted = extract_from_xlsx(sheet)
+
                         row_data.update(extracted)
                         data.append(row_data)
+
+                        if "CUSTOMER" in extracted:
+                            print(f"📝 CUSTOMER for {filename}: {extracted.get('CUSTOMER')}")
+                        else:
+                            print(f"⚠️ CUSTOMER NOT FOUND in {filename}")
+
                     except Exception as e:
                         print(f"❌ Error reading {filename} in {subfolder}: {e}")
 
@@ -162,4 +162,4 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                     'format': format_blank
                 })
 
-print(f"✅ All summaries saved to {output_file}")
+print(f"\n✅ All summaries saved to {output_file}")
