@@ -14,7 +14,7 @@ output_file = "final_summary_all_folders.xlsx"
 patterns = {
     "Part# / Model name": r"(part\s*#|model\s*name)",
     "OPP#": r"opp\s*#?",
-    "CUSTOMER": r"\b(customer|customer name|client|client name)\b",
+    "CUSTOMER": r"\bcustomer\b|\bcustomer\s*name\b|\bclient\s*name\b",
     "Assembly cost / PPD": r"\b(assembly cost|ppd)\b",
     "Estimated BOM cost": r"\b(estimated bom cost|bom cost per unit)\b",
     "Design & Development cost": r"design and development cost",
