@@ -86,24 +86,42 @@ def extract_from_xlsx(sheet):
             if cell.value:
                 cell_text = str(cell.value).strip().lower()
                 for key, pattern in patterns.items():
-                    if key not in extracted and re.search(pattern, cell_text, re.IGNORECASE):
-                        # First check value in same cell
-                        cleaned = clean_value(cell.value, key, cell)
-                        if cleaned and cleaned.lower() != cell_text:
-                            extracted[key] = cleaned
-                            continue
+                    if key not in extracted or not extracted[key]:  # Only if key is missing or empty
+                        if re.search(pattern, cell_text, re.IGNORECASE):
+                            # Debugging print to trace matches
+                            print(f"Found '{key}' match in cell: {cell_text}")
 
-                        # Try next cells
-                        next_val = None
-                        try:
-                            if cell.column + 1 <= max_col:
-                                next_val = sheet.cell(cell.row, cell.column + 1).value
-                            elif cell.row + 1 <= max_row:
-                                next_val = sheet.cell(cell.row + 1, cell.column).value
-                        except:
-                            pass
-                        extracted[key] = clean_value(next_val, key, cell)
+                            # First check value in same cell
+                            cleaned = clean_value(cell.value, key, cell)
+                            if cleaned and cleaned.lower() != cell_text:
+                                extracted[key] = cleaned
+                                continue
+
+                            # Try next cells
+                            next_val = None
+                            try:
+                                if cell.column + 1 <= max_col:
+                                    next_val = sheet.cell(cell.row, cell.column + 1).value
+                                elif cell.row + 1 <= max_row:
+                                    next_val = sheet.cell(cell.row + 1, cell.column).value
+                            except:
+                                pass
+                            extracted[key] = clean_value(next_val, key, cell)
+
+    # Ensure CUSTOMER field is handled properly
+    if 'CUSTOMER' not in extracted:
+        print("CUSTOMER field not found, checking again...")
+        for row_idx in range(sheet.nrows):
+            for col_idx in range(sheet.ncols):
+                cell_text = str(sheet.cell_value(row_idx, col_idx)).strip().lower()
+                if re.search(r"(customer|client)", cell_text, re.IGNORECASE):
+                    customer_data = clean_value(sheet.cell_value(row_idx, col_idx), "CUSTOMER")
+                    if customer_data:
+                        extracted['CUSTOMER'] = customer_data
+                        print(f"Found CUSTOMER: {customer_data}")
+                        break
     return extracted
+
 
 # Write to final Excel without formatting
 with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
