@@ -1,114 +1,140 @@
-from pathlib import Path
-import pandas as pd
+import os
 import re
 import xlrd
-from openpyxl import load_workbook
-from openpyxl.cell import Cell
+import openpyxl
 from datetime import datetime
+from openpyxl.cell.cell import Cell
+import pandas as pd
 
-# Define field patterns
+# Main folder path
+main_folder_path = r"D:\RIghtstroken\Pricing\PricingExtraction\Pricing_Sheets_24-Feb-25"
+output_file = "final_summary_all_folders.xlsx"
+
+# Field patterns
 patterns = {
-    "PROJECT CODE": r"(project\s*code|code\s*project|project\s*id|job\s*code)",
-    "CUSTOMER": r"(customer|client|buyer)",
-    "VEHICLE NO": r"(vehicle\s*no|vehicle\s*number|truck\s*no|lorry\s*no|reg\s*no)",
-    "DESCRIPTION": r"(description|item\s*desc|details)",
-    "CREATED ON": r"(created\s*on|date|issued\s*on|generated\s*on)"
+    "Part# / Model name": r"(part\s*#|model\s*name)",
+    "OPP#": r"opp\s*#?",
+    "CUSTOMER": r"\b(customer|customer name|client|client name)\b",
+    "Assembly cost / PPD": r"\b(assembly cost|ppd)\b",
+    "Estimated BOM cost": r"\b(estimated bom cost|bom cost per unit)\b",
+    "Design & Development cost": r"design and development cost",
+    "Recommended Price": r"recommended price",
+    "Comments to Steven": r"(comments for steven\.s|comments to steven)",
+    "CREATED ON": r"created\s*on\s*[:\-]?"
 }
 
-# Clean and standardize value
+# Clean and extract value, support for in-cell and date formats
 def clean_value(value, key, cell=None):
     if isinstance(cell, Cell) and cell.is_date:
         return cell.value.strftime("%m/%d/%Y")
-    if isinstance(value, float) and key == "CREATED ON":
-        try:
-            date_value = datetime(*xlrd.xldate_as_tuple(value, 0))
-            return date_value.strftime("%m/%d/%Y")
-        except:
-            pass
-    if isinstance(value, str) and key == "CREATED ON":
-        match = re.search(r"(\d{1,2})[-/\s](\w{3,})[-/\s](\d{2,4})", value, re.IGNORECASE)
-        if match:
-            for fmt in ["%d-%b-%y", "%d-%b-%Y", "%d/%b/%y", "%d/%b/%Y"]:
-                try:
-                    return datetime.strptime(match.group(0), fmt).strftime("%m/%d/%Y")
-                except:
-                    continue
+
+    if key == "CREATED ON":
+        # Try converting Excel float date
+        if isinstance(value, float):
+            try:
+                date_value = datetime(*xlrd.xldate_as_tuple(value, 0))
+                return date_value.strftime("%m/%d/%Y")
+            except:
+                pass
+
+        # Try matching string pattern inside same cell
+        if isinstance(value, str):
+            match = re.search(r"(\d{1,2})[-/\s](\w{3,})[-/\s](\d{2,4})", value, re.IGNORECASE)
+            if match:
+                for fmt in ["%d-%b-%y", "%d-%b-%Y", "%d/%b/%y", "%d/%b/%Y"]:
+                    try:
+                        return datetime.strptime(match.group(0), fmt).strftime("%m/%d/%Y")
+                    except:
+                        continue
+
     return str(value).strip()
 
-# Extract data from .xls files
+# Extract from XLS
 def extract_from_xls(sheet):
     extracted = {}
     for row_idx in range(sheet.nrows):
         for col_idx in range(sheet.ncols):
-            cell_value = str(sheet.cell_value(row_idx, col_idx)).strip().lower()
+            cell_text = str(sheet.cell_value(row_idx, col_idx)).strip().lower()
             for key, pattern in patterns.items():
-                if re.search(pattern, cell_value, re.IGNORECASE):
-                    if key not in extracted:
-                        candidate = sheet.cell_value(row_idx, col_idx)
-                        if key == "CREATED ON" and re.search(r"\d{1,2}[-/\s]\w+[-/\s]\d{2,4}", str(candidate), re.IGNORECASE):
-                            extracted[key] = clean_value(candidate, key)
-                        else:
-                            next_value = ""
-                            try:
-                                next_value = sheet.cell_value(row_idx, col_idx + 1)
-                                if not next_value or str(next_value).strip() == "":
-                                    next_value = sheet.cell_value(row_idx + 1, col_idx)
-                                if not next_value or str(next_value).strip() == "":
-                                    next_value = sheet.cell_value(row_idx + 1, col_idx + 1)
-                            except:
-                                continue
-                            extracted[key] = clean_value(next_value, key)
+                if key not in extracted and re.search(pattern, cell_text, re.IGNORECASE):
+                    # Try in same cell
+                    cleaned = clean_value(sheet.cell_value(row_idx, col_idx), key)
+                    if cleaned and cleaned.lower() != cell_text:
+                        extracted[key] = cleaned
+                        continue
+
+                    # Try next cell
+                    next_val = ""
+                    try:
+                        if col_idx + 1 < sheet.ncols:
+                            next_val = sheet.cell_value(row_idx, col_idx + 1)
+                        elif row_idx + 1 < sheet.nrows:
+                            next_val = sheet.cell_value(row_idx + 1, col_idx)
+                    except:
+                        pass
+
+                    extracted[key] = clean_value(next_val, key)
     return extracted
 
-# Extract data from .xlsx files
+# Extract from XLSX
 def extract_from_xlsx(sheet):
     extracted = {}
+    max_row, max_col = sheet.max_row, sheet.max_column
+
     for row in sheet.iter_rows():
         for cell in row:
             if cell.value:
-                value = str(cell.value).strip().lower()
+                cell_text = str(cell.value).strip().lower()
                 for key, pattern in patterns.items():
-                    if re.search(pattern, value, re.IGNORECASE):
-                        if key not in extracted:
-                            candidate = value
-                            if key == "CREATED ON" and re.search(r"\d{1,2}[-/\s]\w+[-/\s]\d{2,4}", candidate, re.IGNORECASE):
-                                extracted[key] = clean_value(candidate, key, cell)
-                            else:
-                                next_val = None
-                                try:
-                                    next_val = sheet.cell(cell.row, cell.column + 1).value
-                                    if not next_val or str(next_val).strip() == "":
-                                        next_val = sheet.cell(cell.row + 1, cell.column).value
-                                    if not next_val or str(next_val).strip() == "":
-                                        next_val = sheet.cell(cell.row + 1, cell.column + 1).value
-                                except:
-                                    continue
-                                extracted[key] = clean_value(next_val, key, cell)
+                    if key not in extracted and re.search(pattern, cell_text, re.IGNORECASE):
+                        # First check value in same cell
+                        cleaned = clean_value(cell.value, key, cell)
+                        if cleaned and cleaned.lower() != cell_text:
+                            extracted[key] = cleaned
+                            continue
+
+                        # Try next cells
+                        next_val = None
+                        try:
+                            if cell.column + 1 <= max_col:
+                                next_val = sheet.cell(cell.row, cell.column + 1).value
+                            elif cell.row + 1 <= max_row:
+                                next_val = sheet.cell(cell.row + 1, cell.column).value
+                        except:
+                            pass
+                        extracted[key] = clean_value(next_val, key, cell)
     return extracted
 
-# Main function
-def process_excels(root_folder):
-    data = []
-    for path in Path(root_folder).rglob("*.*"):
-        if path.suffix in [".xls", ".xlsx"]:
-            try:
-                if path.suffix == ".xls":
-                    book = xlrd.open_workbook(path)
-                    sheet = book.sheet_by_index(0)
-                    extracted = extract_from_xls(sheet)
-                else:
-                    book = load_workbook(path, data_only=True)
-                    sheet = book.active
-                    extracted = extract_from_xlsx(sheet)
-                extracted["FILE"] = str(path.name)
-                data.append(extracted)
-            except Exception as e:
-                print(f"Error processing {path.name}: {e}")
+# Write to final Excel without formatting
+with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
+    for subfolder in os.listdir(main_folder_path):
+        subfolder_path = os.path.join(main_folder_path, subfolder)
+        if os.path.isdir(subfolder_path):
+            data = []
+            for filename in os.listdir(subfolder_path):
+                if filename.endswith((".xls", ".xlsx")):
+                    file_path = os.path.join(subfolder_path, filename)
+                    row_data = {"File Name": filename}
+                    try:
+                        if filename.endswith(".xls"):
+                            book = xlrd.open_workbook(file_path)
+                            sheet = book.sheet_by_index(0)
+                            extracted = extract_from_xls(sheet)
+                        else:
+                            wb = openpyxl.load_workbook(file_path, data_only=True)
+                            sheet = wb.active
+                            extracted = extract_from_xlsx(sheet)
+                        row_data.update(extracted)
+                        data.append(row_data)
+                    except Exception as e:
+                        print(f"❌ Error reading {filename} in {subfolder}: {e}")
 
-    df = pd.DataFrame(data)
-    df.to_excel("extracted_data.xlsx", index=False)
-    print("Extraction completed and saved to extracted_data.xlsx")
+            if data:
+                df = pd.DataFrame(data)
+                sheet_name = subfolder[:31]
+                df.to_excel(writer, index=False, sheet_name=sheet_name)
+                worksheet = writer.sheets[sheet_name]
+                for col_num in range(len(df.columns)):
+                    worksheet.set_column(col_num, col_num, 25)
 
-# Call the main function with your root folder
-# process_excels("your/folder/path/here")
-
+print(f"✅ All summaries saved to {output_file}")
