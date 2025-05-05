@@ -44,7 +44,7 @@ def clean_value(value, key, cell=None):
                     except:
                         continue
 
-    return str(value).strip() if value is not None else ""
+    return str(value).strip()
 
 # Extract from .xls files
 def extract_from_xls(sheet):
@@ -71,7 +71,7 @@ def extract_from_xls(sheet):
                     extracted[key] = clean_value(next_val, key)
     return extracted
 
-# Updated extract_from_xlsx
+# Extract from .xlsx files (updated)
 def extract_from_xlsx(sheet):
     extracted = {}
     max_row, max_col = sheet.max_row, sheet.max_column
@@ -90,7 +90,16 @@ def extract_from_xlsx(sheet):
                                 extracted[key] = cleaned
                                 break
 
-                            # Search surrounding cells
+                            # If text like "Customer: ABC Corp"
+                            if ":" in cell_text:
+                                parts = re.split(r"[:\-]", cell_text)
+                                if len(parts) > 1:
+                                    inline_value = parts[1].strip().title()
+                                    extracted[key] = inline_value
+                                    print(f"📌 Extracted inline value for {key}: {inline_value}")
+                                    break
+
+                            # Fallback: Look around
                             found = False
                             for dr in [0, 1, -1]:
                                 for dc in [1, 0, -1, 2]:
@@ -108,9 +117,10 @@ def extract_from_xlsx(sheet):
                                         continue
                                 if found:
                                     break
+
     return extracted
 
-# Main loop and writer
+# Write to final Excel
 with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
     for subfolder in os.listdir(main_folder_path):
         subfolder_path = os.path.join(main_folder_path, subfolder)
@@ -129,7 +139,6 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                             wb = openpyxl.load_workbook(file_path, data_only=True)
                             sheet = wb.active
                             extracted = extract_from_xlsx(sheet)
-
                         row_data.update(extracted)
                         data.append(row_data)
                     except Exception as e:
@@ -153,4 +162,4 @@ with pd.ExcelWriter(output_file, engine='xlsxwriter') as writer:
                     'format': format_blank
                 })
 
-print(f"\n✅ All summaries saved to {output_file}")
+print(f"✅ All summaries saved to {output_file}")
