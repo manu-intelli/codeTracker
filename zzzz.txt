@@ -1,0 +1,9 @@
+
+(venv) D:\Practice\PCB Gerber>pip install pcb-tools
+Collecting pcb-tools
+  WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out. (read timeout=15)")': /packages/f0/ea/7a884340e74310856a72c6fed67928684badf34716501821afbaf0c4c42d/pcb-tools-0.1.6.tar.gz
+  ERROR: HTTP error 403 while getting https://files.pythonhosted.org/packages/f0/ea/7a884340e74310856a72c6fed67928684badf34716501821afbaf0c4c42d/pcb-tools-0.1.6.tar.gz (from https://pypi.org/simple/pcb-tools/)
+
+[notice] A new release of pip is available: 25.0.1 -> 25.1.1
+[notice] To update, run: python.exe -m pip install --upgrade pip
+ERROR: Could not install requirement pcb-tools from https://files.pythonhosted.org/packages/f0/ea/7a884340e74310856a72c6fed67928684badf34716501821afbaf0c4c42d/pcb-tools-0.1.6.tar.gz because of HTTP error 403 Client Error: Forbidden for url: https://files.pythonhosted.org/packages/f0/ea/7a884340e74310856a72c6fed67928684badf34716501821afbaf0c4c42d/pcb-tools-0.1.6.tar.gz for URL https://files.pythonhosted.org/packages/f0/ea/7a884340e74310856a72c6fed67928684badf34716501821afbaf0c4c42d/pcb-tools-0.1.6.tar.gz (from https://pypi.org/simple/pcb-tools/)
