@@ -1,9 +1,22 @@
-
-(venv) D:\Practice\PCB Gerber>pip install pcb-tools
 Collecting pcb-tools
-  WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out. (read timeout=15)")': /packages/f0/ea/7a884340e74310856a72c6fed67928684badf34716501821afbaf0c4c42d/pcb-tools-0.1.6.tar.gz
-  ERROR: HTTP error 403 while getting https://files.pythonhosted.org/packages/f0/ea/7a884340e74310856a72c6fed67928684badf34716501821afbaf0c4c42d/pcb-tools-0.1.6.tar.gz (from https://pypi.org/simple/pcb-tools/)
+  Downloading pcb-tools-0.1.6.tar.gz (69 kB)
+  Installing build dependencies ... error
+  error: subprocess-exited-with-error
+  
+  × pip subprocess to install build dependencies did not run successfully.
+  │ exit code: 1
+  ╰─> [4 lines of output]
+      Collecting setuptools>=40.8.0
+        Using cached setuptools-80.3.1-py3-none-any.whl.metadata (6.5 kB)
+      ERROR: HTTP error 403 while getting https://files.pythonhosted.org/packages/53/7e/5d8af3317ddbf9519b687bd1c39d8737fde07d97f54df65553faca5cffb1/setuptools-80.3.1-py3-none-any.whl (from https://pypi.org/simple/setuptools/) (requires-python:>=3.9)
+      ERROR: 403 Client Error: Forbidden for url: https://files.pythonhosted.org/packages/53/7e/5d8af3317ddbf9519b687bd1c39d8737fde07d97f54df65553faca5cffb1/setuptools-80.3.1-py3-none-any.whl
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+error: subprocess-exited-with-error
 
-[notice] A new release of pip is available: 25.0.1 -> 25.1.1
-[notice] To update, run: python.exe -m pip install --upgrade pip
-ERROR: Could not install requirement pcb-tools from https://files.pythonhosted.org/packages/f0/ea/7a884340e74310856a72c6fed67928684badf34716501821afbaf0c4c42d/pcb-tools-0.1.6.tar.gz because of HTTP error 403 Client Error: Forbidden for url: https://files.pythonhosted.org/packages/f0/ea/7a884340e74310856a72c6fed67928684badf34716501821afbaf0c4c42d/pcb-tools-0.1.6.tar.gz for URL https://files.pythonhosted.org/packages/f0/ea/7a884340e74310856a72c6fed67928684badf34716501821afbaf0c4c42d/pcb-tools-0.1.6.tar.gz (from https://pypi.org/simple/pcb-tools/)
+× pip subprocess to install build dependencies did not run successfully.
+│ exit code: 1
+╰─> See above for output.
+
+note: This error originates from a subprocess, and is likely not a problem with pip.
